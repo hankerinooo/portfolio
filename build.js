@@ -247,7 +247,7 @@ const CSS = `
     color: var(--ink);
     max-width: 720px;
     margin: 0 auto;
-    padding: 0 2rem;
+    padding: 4rem 2rem 5rem;
     line-height: 1.65;
     font-size: 1.0625rem;
   }
@@ -258,16 +258,20 @@ const CSS = `
     line-height: 1.1;
     letter-spacing: -0.025em;
   }
-  h1 { font-size: clamp(3.5rem, 10vw, 6rem); margin-top: 5rem; margin-bottom: 0.75rem; }
-  h2 { font-size: 2.25rem; margin-top: 3.5rem; margin-bottom: 0.5rem; }
-  h3 { font-size: 1.625rem; margin-top: 2.5rem; margin-bottom: 0.25rem; }
-  h4 { font-size: 1.25rem; margin-top: 2rem; margin-bottom: 0.25rem; }
+  h1 { font-size: clamp(3.5rem, 10vw, 6rem); margin-top: 0; margin-bottom: 0.5rem; }
+  h2 { font-size: 2.25rem; margin-top: 3rem; margin-bottom: 0.5rem; }
+  h3 { font-size: 1.625rem; margin-top: 2.25rem; margin-bottom: 0.25rem; }
+  h4 { font-size: 1.25rem; margin-top: 1.75rem; margin-bottom: 0.25rem; }
   .skip-link { position: absolute; top: -4rem; left: 0; }
   .skip-link:focus { top: 0; }
   :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
   a { color: var(--ink); }
   a:visited { color: var(--ink); }
-  hr { border: none; margin: 4rem 0; }
+  hr { border: none; margin: 3rem 0; }
+  header + hr { margin-top: 2rem; }
+  main + hr { margin-bottom: 1.5rem; }
+  header > p:first-child { margin-top: 0; margin-bottom: 2.5rem; font-size: 0.875rem; }
+  footer p { margin: 0; }
   blockquote {
     margin-inline: 0;
     padding-inline-start: 2rem;
