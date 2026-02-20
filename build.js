@@ -275,6 +275,46 @@ const CSS = `
     transition: opacity 0.15s;
   }
   .theme-toggle:hover { opacity: 1; }
+  html { scroll-behavior: smooth; }
+  .page-nav { display: none; }
+  @media (min-width: 1200px) {
+    .page-nav {
+      display: block;
+      position: fixed;
+      top: 3rem;
+      left: calc(50% + 34ch + 2rem);
+      width: 12rem;
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+    .page-nav-title {
+      display: block;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.4;
+      margin-bottom: 0.6rem;
+      padding-left: 0.75rem;
+    }
+    .page-nav a {
+      display: block;
+      padding: 0.2rem 0 0.2rem 0.75rem;
+      text-decoration: none;
+      color: inherit;
+      opacity: 0.45;
+      border-left: 2px solid transparent;
+      transition: opacity 0.15s;
+    }
+    .page-nav a:visited { color: inherit; }
+    .page-nav a:hover { opacity: 0.85; }
+    .page-nav a.active {
+      opacity: 1;
+      border-left-color: currentColor;
+      font-weight: 500;
+    }
+    .page-nav .nav-h3 { padding-left: 1.5rem; font-size: 0.75rem; }
+  }
 `;
 
 // ---------------------------------------------------------------------------
@@ -396,6 +436,10 @@ function projectPage({ title, company, year, tags, url, content }) {
     ${url ? `<p><a href="${url}">View project ↗</a></p>` : ''}
   </header>
 
+  <nav id="page-nav" class="page-nav" aria-label="On this page">
+    <span class="page-nav-title">On this page</span>
+  </nav>
+
   <hr>
 
   <main id="main">
@@ -411,6 +455,7 @@ function projectPage({ title, company, year, tags, url, content }) {
   <button class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode">Dark</button>
   <script>
     (function(){
+      // Theme toggle
       var root=document.documentElement,btn=document.getElementById('theme-toggle');
       function update(){
         var dark=root.getAttribute('data-theme')==='dark'||
@@ -426,6 +471,35 @@ function projectPage({ title, company, year, tags, url, content }) {
         localStorage.setItem('theme',next);
         update();
       });
+
+      // In-page nav
+      var nav=document.getElementById('page-nav');
+      if(nav){
+        var hs=Array.prototype.slice.call(document.querySelectorAll('#main h2,#main h3'));
+        if(hs.length<2){
+          nav.style.display='none';
+        } else {
+          hs.forEach(function(h,i){
+            if(!h.id)h.id='s'+i;
+            var a=document.createElement('a');
+            a.href='#'+h.id;
+            a.textContent=h.textContent;
+            if(h.tagName==='H3')a.className='nav-h3';
+            nav.appendChild(a);
+          });
+          var links=nav.querySelectorAll('a');
+          links[0].classList.add('active');
+          hs.forEach(function(h){
+            new IntersectionObserver(function(entries){
+              if(entries[0].isIntersecting){
+                links.forEach(function(l){l.classList.remove('active');});
+                var a=nav.querySelector('a[href="#'+h.id+'"]');
+                if(a)a.classList.add('active');
+              }
+            },{rootMargin:'0px 0px -65% 0px'}).observe(h);
+          });
+        }
+      }
     })();
   </script>
 
