@@ -3,6 +3,10 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [main]
+  schedule:
+    # Re-build hourly so Notion edits appear on the site within ~1 hour.
+    # Remove this line if you prefer to trigger deploys manually only.
+    - cron: '0 * * * *'
   workflow_dispatch:
 
 permissions:
@@ -23,11 +27,21 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Build site from Notion
+        run: node build.js
+        env:
+          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+          NOTION_DATABASE_ID: ${{ secrets.NOTION_DATABASE_ID }}
+
       - uses: actions/configure-pages@v5
 
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: .
+          path: _site
 
       - id: deployment
         uses: actions/deploy-pages@v4
