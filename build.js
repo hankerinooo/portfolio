@@ -324,6 +324,12 @@ const CSS = `
     transition: opacity 0.15s;
   }
   .theme-toggle:hover { opacity: 1; }
+  @media (max-width: 640px) {
+    body { padding: 1.75rem 1.25rem 2.5rem; }
+    hr { margin: 1.75rem 0; }
+    header + hr { margin-top: 1.25rem; }
+    nav[aria-label="Selected work"] a { padding-block: 0.55rem; }
+  }
   .page-nav { display: none; }
   @media (min-width: 1200px) {
     .page-nav {
@@ -389,38 +395,6 @@ function indexPage(projects) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <style>${CSS}  </style>
-  <style>
-    body { border-top: 5px solid var(--ink); }
-    nav[aria-label="Selected work"]::before {
-      content: "Work";
-      display: block;
-      font-size: 0.625rem;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      opacity: 0.4;
-      margin-bottom: 1.25rem;
-    }
-    nav[aria-label="Contact"]::before {
-      content: "Contact";
-      display: block;
-      font-size: 0.625rem;
-      font-weight: 600;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      opacity: 0.4;
-      margin-bottom: 0.5rem;
-    }
-    nav[aria-label="Selected work"] a {
-      padding-left: 0.75rem;
-      border-left: 3px solid transparent;
-      transition: border-color 0.12s;
-    }
-    nav[aria-label="Selected work"] a:hover {
-      opacity: 1;
-      border-left-color: var(--ink);
-    }
-  </style>
   <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
 <body>
