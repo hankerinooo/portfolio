@@ -5,16 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Henry Davis is a UX designer who creates clear, accessible digital products.">
   <title>Henry Davis &mdash; UX Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-feature-settings: 'cv05', 'cv08', 'ss01';
       max-width: 65ch;
       margin: 3rem auto;
       padding: 0 1rem;
-      line-height: 1.6;
-      font-size: 1.125rem;
+      line-height: 1.65;
+      font-size: 1.0625rem;
     }
 
-    h1 { text-align: center; }
+    h1 { text-align: center; letter-spacing: -0.02em; }
+    h2, h3, h4 { letter-spacing: -0.015em; }
 
     /* Visually hidden until focused — lets keyboard users skip repeated nav */
     .skip-link {
@@ -33,12 +39,12 @@
     /* Minimum 44×44px touch target (WCAG 2.5.5 AAA) */
     a {
       display: inline-block;
-      padding-block: 0.5rem;
+      padding-block: 0.4rem;
     }
 
-    /* Dark mode — link colours verified at ≥7:1 contrast on #000 */
+    /* Dark mode — link colours verified at ≥7:1 contrast on #0a0a0a */
     @media (prefers-color-scheme: dark) {
-      body { background: #000; color: #fff; }
+      body { background: #0a0a0a; color: #f0f0f0; }
       a { color: #6ea8fe; }
       a:visited { color: #c58af9; }
     }

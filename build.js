@@ -211,36 +211,45 @@ function renderBlocks(blocks) {
 
 const CSS = `
   body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'cv05', 'cv08', 'ss01';
     max-width: 65ch;
     margin: 3rem auto;
     padding: 0 1rem;
-    line-height: 1.6;
-    font-size: 1.125rem;
+    line-height: 1.65;
+    font-size: 1.0625rem;
   }
-  h1 { text-align: center; }
+  h1 { text-align: center; letter-spacing: -0.02em; }
+  h2, h3, h4 { letter-spacing: -0.015em; }
   .skip-link { position: absolute; top: -4rem; left: 0; }
   .skip-link:focus { top: 0; }
   :focus-visible { outline: 3px solid; outline-offset: 3px; }
-  a { display: inline-block; padding-block: 0.5rem; }
+  a { display: inline-block; padding-block: 0.4rem; }
   blockquote {
     border-left: 3px solid currentColor;
     margin-inline-start: 0;
     padding-inline-start: 1.5rem;
     font-style: italic;
   }
-  pre { overflow-x: auto; padding: 1rem; border: 1px solid #ccc; border-radius: 2px; }
+  pre {
+    overflow-x: auto;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
   figure { margin-inline: 0; }
   figure img { max-width: 100%; display: block; }
-  figcaption { font-size: 0.9em; opacity: 0.7; margin-top: 0.25rem; }
+  figcaption { font-size: 0.875em; opacity: 0.65; margin-top: 0.4rem; }
   .callout {
     border-left: 4px solid currentColor;
     padding: 0.75rem 1rem;
     margin-block: 1rem;
   }
-  .meta { opacity: 0.7; }
+  .meta { opacity: 0.65; font-size: 0.9375rem; }
   .tagline { font-style: italic; }
   @media (prefers-color-scheme: dark) {
-    body { background: #000; color: #fff; }
+    body { background: #0a0a0a; color: #f0f0f0; }
     a { color: #6ea8fe; }
     a:visited { color: #c58af9; }
     pre { border-color: #333; }
@@ -267,6 +276,9 @@ function indexPage(projects) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Henry Davis is a UX designer who creates clear, accessible digital products.">
   <title>Henry Davis &mdash; UX Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>${CSS}  </style>
 </head>
 <body>
@@ -324,6 +336,9 @@ function projectPage({ title, company, year, tags, url, content }) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="${title}${company ? ` — ${company}` : ''}">
   <title>${title} &mdash; Henry Davis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>${CSS}  </style>
 </head>
 <body>
