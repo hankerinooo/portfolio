@@ -74,6 +74,12 @@ async function getBlocks(blockId) {
     blocks.push(...data.results);
     cursor = data.has_more ? data.next_cursor : null;
   } while (cursor);
+  // Recursively fetch children for blocks that have them
+  for (const block of blocks) {
+    if (block.has_children) {
+      block._children = await getBlocks(block.id);
+    }
+  }
   return blocks;
 }
 
@@ -135,7 +141,9 @@ function renderBlocks(blocks) {
     if (type === 'bulleted_list_item') {
       const items = [];
       while (i < blocks.length && blocks[i].type === 'bulleted_list_item') {
-        items.push(`<li>${richText(blocks[i].bulleted_list_item.rich_text)}</li>`);
+        const bl = blocks[i];
+        const nested = bl._children ? renderBlocks(bl._children) : '';
+        items.push(`<li>${richText(bl.bulleted_list_item.rich_text)}${nested}</li>`);
         i++;
       }
       out.push(`<ul>${items.join('')}</ul>`);
@@ -145,7 +153,9 @@ function renderBlocks(blocks) {
     if (type === 'numbered_list_item') {
       const items = [];
       while (i < blocks.length && blocks[i].type === 'numbered_list_item') {
-        items.push(`<li>${richText(blocks[i].numbered_list_item.rich_text)}</li>`);
+        const bl = blocks[i];
+        const nested = bl._children ? renderBlocks(bl._children) : '';
+        items.push(`<li>${richText(bl.numbered_list_item.rich_text)}${nested}</li>`);
         i++;
       }
       out.push(`<ol>${items.join('')}</ol>`);
