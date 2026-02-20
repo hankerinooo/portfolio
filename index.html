@@ -7,47 +7,63 @@
   <title>Henry Davis &mdash; UX Designer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <style>
+    :root { --bg: #FAF8F5; --ink: #1C1917; --ink-mid: rgba(28,25,23,0.5); }
+    @media (prefers-color-scheme: dark) {
+      html:not([data-theme="light"]) { --bg: #1A1612; --ink: #EDE8E0; --ink-mid: rgba(237,232,224,0.5); }
+    }
+    html[data-theme="dark"] { --bg: #1A1612; --ink: #EDE8E0; --ink-mid: rgba(237,232,224,0.5); }
+    html { scroll-behavior: smooth; }
     body {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif;
-      font-feature-settings: 'cv05', 'cv08', 'ss01';
-      max-width: 65ch;
-      margin: 3rem auto;
-      padding: 0 1rem;
+      font-family: 'Jost', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--ink);
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 2rem;
       line-height: 1.65;
       font-size: 1.0625rem;
     }
-    h1, h2, h3, h4 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; }
-    h1 { text-align: center; letter-spacing: -0.02em; }
-    h2, h3, h4 { letter-spacing: -0.015em; }
+    h1, h2, h3, h4 { font-family: 'Fraunces', Georgia, serif; font-weight: 400; font-optical-sizing: auto; line-height: 1.1; letter-spacing: -0.025em; }
+    h1 { font-size: clamp(3.5rem, 10vw, 6rem); margin-top: 5rem; margin-bottom: 0.75rem; }
     .skip-link { position: absolute; top: -4rem; left: 0; }
     .skip-link:focus { top: 0; }
-    :focus-visible { outline: 3px solid; outline-offset: 3px; }
-    a { display: inline-block; padding-block: 0.4rem; }
-    @media (prefers-color-scheme: dark) {
-      html:not([data-theme="light"]) body { background: #0a0a0a; color: #f0f0f0; }
-      html:not([data-theme="light"]) a { color: #6ea8fe; }
-      html:not([data-theme="light"]) a:visited { color: #c58af9; }
+    :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+    a { color: var(--ink); }
+    a:visited { color: var(--ink); }
+    hr { border: none; margin: 4rem 0; }
+    .meta { opacity: 0.5; font-size: 0.875rem; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; }
+    nav[aria-label="Selected work"] a {
+      font-family: 'Fraunces', Georgia, serif;
+      font-optical-sizing: auto;
+      font-size: clamp(1.5rem, 4vw, 2.25rem);
+      font-weight: 400;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      text-decoration: none;
+      color: var(--ink);
+      display: block;
+      padding-block: 1rem;
+      transition: opacity 0.15s;
     }
-    html[data-theme="dark"] body { background: #0a0a0a; color: #f0f0f0; }
-    html[data-theme="dark"] a { color: #6ea8fe; }
-    html[data-theme="dark"] a:visited { color: #c58af9; }
-    html { scroll-behavior: smooth; }
+    nav[aria-label="Selected work"] a:visited { color: var(--ink); }
+    nav[aria-label="Selected work"] a:hover { opacity: 0.45; }
     .theme-toggle {
       position: fixed;
       bottom: 1.5rem;
       right: 1.5rem;
       background: transparent;
-      border: 1.5px solid currentColor;
+      border: 1px solid var(--ink-mid);
       border-radius: 2rem;
-      padding: 0.4rem 0.9rem;
-      font: 0.8125rem/1 'Inter', system-ui, sans-serif;
-      letter-spacing: 0.01em;
+      padding: 0.35rem 0.85rem;
+      font: 0.6875rem/1 'Jost', system-ui, sans-serif;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
       cursor: pointer;
-      color: inherit;
+      color: var(--ink);
       z-index: 200;
-      opacity: 0.6;
+      opacity: 0.4;
       transition: opacity 0.15s;
     }
     .theme-toggle:hover { opacity: 1; }
@@ -60,7 +76,7 @@
 
   <header>
     <h1>Henry Davis</h1>
-    <p>UX Designer &mdash; [City] &mdash; <a href="mailto:henry@example.com">henry@example.com</a></p>
+    <p class="meta">UX Designer &mdash; [City] &mdash; <a href="mailto:henry@example.com">henry@example.com</a></p>
   </header>
 
   <hr>

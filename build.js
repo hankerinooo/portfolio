@@ -220,108 +220,141 @@ function renderBlocks(blocks) {
 // ---------------------------------------------------------------------------
 
 const CSS = `
+  :root {
+    --bg: #FAF8F5;
+    --ink: #1C1917;
+    --ink-faint: rgba(28,25,23,0.1);
+    --ink-mid: rgba(28,25,23,0.5);
+  }
+  @media (prefers-color-scheme: dark) {
+    html:not([data-theme="light"]) {
+      --bg: #1A1612;
+      --ink: #EDE8E0;
+      --ink-faint: rgba(237,232,224,0.1);
+      --ink-mid: rgba(237,232,224,0.5);
+    }
+  }
+  html[data-theme="dark"] {
+    --bg: #1A1612;
+    --ink: #EDE8E0;
+    --ink-faint: rgba(237,232,224,0.1);
+    --ink-mid: rgba(237,232,224,0.5);
+  }
+  html { scroll-behavior: smooth; }
   body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-feature-settings: 'cv05', 'cv08', 'ss01';
-    max-width: 65ch;
-    margin: 3rem auto;
-    padding: 0 1rem;
+    font-family: 'Jost', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 0 2rem;
     line-height: 1.65;
     font-size: 1.0625rem;
   }
-  h1, h2, h3, h4 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; }
-  h1 { text-align: center; letter-spacing: -0.02em; }
-  h2, h3, h4 { letter-spacing: -0.015em; }
+  h1, h2, h3, h4 {
+    font-family: 'Fraunces', Georgia, serif;
+    font-weight: 400;
+    font-optical-sizing: auto;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+  }
+  h1 { font-size: clamp(3.5rem, 10vw, 6rem); margin-top: 5rem; margin-bottom: 0.75rem; }
+  h2 { font-size: 2.25rem; margin-top: 3.5rem; margin-bottom: 0.5rem; }
+  h3 { font-size: 1.625rem; margin-top: 2.5rem; margin-bottom: 0.25rem; }
+  h4 { font-size: 1.25rem; margin-top: 2rem; margin-bottom: 0.25rem; }
   .skip-link { position: absolute; top: -4rem; left: 0; }
   .skip-link:focus { top: 0; }
-  :focus-visible { outline: 3px solid; outline-offset: 3px; }
-  a { display: inline-block; padding-block: 0.4rem; }
+  :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+  a { color: var(--ink); }
+  a:visited { color: var(--ink); }
+  hr { border: none; margin: 4rem 0; }
   blockquote {
-    border-left: 3px solid currentColor;
-    margin-inline-start: 0;
-    padding-inline-start: 1.5rem;
+    margin-inline: 0;
+    padding-inline-start: 2rem;
     font-style: italic;
+    opacity: 0.75;
   }
   pre {
     overflow-x: auto;
-    padding: 1rem;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 0.9em;
+    padding: 1.25rem;
+    border: 1px solid var(--ink-faint);
+    font-size: 0.875em;
+    background: transparent;
   }
-  figure { margin-inline: 0; }
+  figure { margin-inline: 0; margin-block: 2.5rem; }
   figure img { max-width: 100%; display: block; }
-  figcaption { font-size: 0.875em; opacity: 0.65; margin-top: 0.4rem; }
-  .callout {
-    border-left: 4px solid currentColor;
-    padding: 0.75rem 1rem;
-    margin-block: 1rem;
+  figcaption { font-size: 0.875em; opacity: 0.55; margin-top: 0.5rem; }
+  .callout { padding: 1rem 0; font-style: italic; opacity: 0.8; }
+  .meta { opacity: 0.5; font-size: 0.875rem; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; }
+  .tagline { font-style: italic; font-size: 1.125rem; opacity: 0.8; }
+  nav[aria-label="Selected work"] a {
+    font-family: 'Fraunces', Georgia, serif;
+    font-optical-sizing: auto;
+    font-size: clamp(1.5rem, 4vw, 2.25rem);
+    font-weight: 400;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    text-decoration: none;
+    color: var(--ink);
+    display: block;
+    padding-block: 1rem;
+    transition: opacity 0.15s;
   }
-  .meta { opacity: 0.65; font-size: 0.9375rem; }
-  .tagline { font-style: italic; }
-  @media (prefers-color-scheme: dark) {
-    html:not([data-theme="light"]) body { background: #0a0a0a; color: #f0f0f0; }
-    html:not([data-theme="light"]) a { color: #6ea8fe; }
-    html:not([data-theme="light"]) a:visited { color: #c58af9; }
-    html:not([data-theme="light"]) pre { border-color: #333; }
-  }
-  html[data-theme="dark"] body { background: #0a0a0a; color: #f0f0f0; }
-  html[data-theme="dark"] a { color: #6ea8fe; }
-  html[data-theme="dark"] a:visited { color: #c58af9; }
-  html[data-theme="dark"] pre { border-color: #333; }
+  nav[aria-label="Selected work"] a:visited { color: var(--ink); }
+  nav[aria-label="Selected work"] a:hover { opacity: 0.45; }
   .theme-toggle {
     position: fixed;
     bottom: 1.5rem;
     right: 1.5rem;
     background: transparent;
-    border: 1.5px solid currentColor;
+    border: 1px solid var(--ink-mid);
     border-radius: 2rem;
-    padding: 0.4rem 0.9rem;
-    font: 0.8125rem/1 'Inter', system-ui, sans-serif;
-    letter-spacing: 0.01em;
+    padding: 0.35rem 0.85rem;
+    font: 0.6875rem/1 'Jost', system-ui, sans-serif;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
     cursor: pointer;
-    color: inherit;
+    color: var(--ink);
     z-index: 200;
-    opacity: 0.6;
+    opacity: 0.4;
     transition: opacity 0.15s;
   }
   .theme-toggle:hover { opacity: 1; }
-  html { scroll-behavior: smooth; }
   .page-nav { display: none; }
   @media (min-width: 1200px) {
     .page-nav {
       display: block;
       position: fixed;
       top: 3rem;
-      left: calc(50% + 20rem);
+      left: calc(50% + 22rem);
       width: 12rem;
       font-size: 0.8rem;
       line-height: 1.45;
     }
     .page-nav-title {
       display: block;
-      font-size: 0.6875rem;
-      font-weight: 600;
-      letter-spacing: 0.08em;
+      font-size: 0.625rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       opacity: 0.4;
-      margin-bottom: 0.6rem;
+      margin-bottom: 0.75rem;
       padding-left: 0.75rem;
     }
     .page-nav a {
       display: block;
       padding: 0.2rem 0 0.2rem 0.75rem;
       text-decoration: none;
-      color: inherit;
+      color: var(--ink);
       opacity: 0.45;
       border-left: 2px solid transparent;
       transition: opacity 0.15s;
     }
-    .page-nav a:visited { color: inherit; }
+    .page-nav a:visited { color: var(--ink); }
     .page-nav a:hover { opacity: 0.85; }
     .page-nav a.active {
       opacity: 1;
-      border-left-color: currentColor;
+      border-left-color: var(--ink);
       font-weight: 500;
     }
     .page-nav .nav-h3 { padding-left: 1.5rem; font-size: 0.75rem; }
@@ -350,7 +383,7 @@ function indexPage(projects) {
   <title>Henry Davis &mdash; UX Designer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <style>${CSS}  </style>
   <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
@@ -360,7 +393,7 @@ function indexPage(projects) {
 
   <header>
     <h1>Henry Davis</h1>
-    <p>UX Designer &mdash; <a href="mailto:henry@example.com">henry@example.com</a></p>
+    <p class="meta">UX Designer &mdash; <a href="mailto:henry@example.com">henry@example.com</a></p>
   </header>
 
   <hr>
@@ -432,7 +465,7 @@ function projectPage({ title, company, year, tags, url, content }) {
   <title>${title} &mdash; Henry Davis</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <style>${CSS}  </style>
   <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
