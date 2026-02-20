@@ -211,39 +211,109 @@ function renderBlocks(blocks) {
 
 const CSS = `
   body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: 'cv05', 'cv08', 'ss01';
     max-width: 65ch;
     margin: 3rem auto;
     padding: 0 1rem;
-    line-height: 1.6;
-    font-size: 1.125rem;
+    line-height: 1.65;
+    font-size: 1.0625rem;
   }
-  h1 { text-align: center; }
+  h1 { text-align: center; letter-spacing: -0.02em; }
+  h2, h3, h4 { letter-spacing: -0.015em; }
   .skip-link { position: absolute; top: -4rem; left: 0; }
   .skip-link:focus { top: 0; }
   :focus-visible { outline: 3px solid; outline-offset: 3px; }
-  a { display: inline-block; padding-block: 0.5rem; }
+  a { display: inline-block; padding-block: 0.4rem; }
   blockquote {
     border-left: 3px solid currentColor;
     margin-inline-start: 0;
     padding-inline-start: 1.5rem;
     font-style: italic;
   }
-  pre { overflow-x: auto; padding: 1rem; border: 1px solid #ccc; border-radius: 2px; }
+  pre {
+    overflow-x: auto;
+    padding: 1rem;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.9em;
+  }
   figure { margin-inline: 0; }
   figure img { max-width: 100%; display: block; }
-  figcaption { font-size: 0.9em; opacity: 0.7; margin-top: 0.25rem; }
+  figcaption { font-size: 0.875em; opacity: 0.65; margin-top: 0.4rem; }
   .callout {
     border-left: 4px solid currentColor;
     padding: 0.75rem 1rem;
     margin-block: 1rem;
   }
-  .meta { opacity: 0.7; }
+  .meta { opacity: 0.65; font-size: 0.9375rem; }
   .tagline { font-style: italic; }
   @media (prefers-color-scheme: dark) {
-    body { background: #000; color: #fff; }
-    a { color: #6ea8fe; }
-    a:visited { color: #c58af9; }
-    pre { border-color: #333; }
+    html:not([data-theme="light"]) body { background: #0a0a0a; color: #f0f0f0; }
+    html:not([data-theme="light"]) a { color: #6ea8fe; }
+    html:not([data-theme="light"]) a:visited { color: #c58af9; }
+    html:not([data-theme="light"]) pre { border-color: #333; }
+  }
+  html[data-theme="dark"] body { background: #0a0a0a; color: #f0f0f0; }
+  html[data-theme="dark"] a { color: #6ea8fe; }
+  html[data-theme="dark"] a:visited { color: #c58af9; }
+  html[data-theme="dark"] pre { border-color: #333; }
+  .theme-toggle {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: transparent;
+    border: 1.5px solid currentColor;
+    border-radius: 2rem;
+    padding: 0.4rem 0.9rem;
+    font: 0.8125rem/1 'Inter', system-ui, sans-serif;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    color: inherit;
+    z-index: 200;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+  }
+  .theme-toggle:hover { opacity: 1; }
+  html { scroll-behavior: smooth; }
+  .page-nav { display: none; }
+  @media (min-width: 1200px) {
+    .page-nav {
+      display: block;
+      position: fixed;
+      top: 3rem;
+      left: calc(50% + 34ch + 2rem);
+      width: 12rem;
+      font-size: 0.8rem;
+      line-height: 1.45;
+    }
+    .page-nav-title {
+      display: block;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      opacity: 0.4;
+      margin-bottom: 0.6rem;
+      padding-left: 0.75rem;
+    }
+    .page-nav a {
+      display: block;
+      padding: 0.2rem 0 0.2rem 0.75rem;
+      text-decoration: none;
+      color: inherit;
+      opacity: 0.45;
+      border-left: 2px solid transparent;
+      transition: opacity 0.15s;
+    }
+    .page-nav a:visited { color: inherit; }
+    .page-nav a:hover { opacity: 0.85; }
+    .page-nav a.active {
+      opacity: 1;
+      border-left-color: currentColor;
+      font-weight: 500;
+    }
+    .page-nav .nav-h3 { padding-left: 1.5rem; font-size: 0.75rem; }
   }
 `;
 
@@ -267,7 +337,11 @@ function indexPage(projects) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Henry Davis is a UX designer who creates clear, accessible digital products.">
   <title>Henry Davis &mdash; UX Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>${CSS}  </style>
+  <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
 <body>
 
@@ -309,6 +383,27 @@ ${items}
     <p><small>&copy; ${year} Henry Davis</small></p>
   </footer>
 
+  <button class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode">Dark</button>
+  <script>
+    (function(){
+      var root=document.documentElement,btn=document.getElementById('theme-toggle');
+      function update(){
+        var dark=root.getAttribute('data-theme')==='dark'||
+          (!root.getAttribute('data-theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+        btn.textContent=dark?'Light':'Dark';
+        btn.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click',function(){
+        var cur=root.getAttribute('data-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+        var next=cur==='dark'?'light':'dark';
+        root.setAttribute('data-theme',next);
+        localStorage.setItem('theme',next);
+        update();
+      });
+    })();
+  </script>
+
 </body>
 </html>`;
 }
@@ -324,7 +419,11 @@ function projectPage({ title, company, year, tags, url, content }) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="${title}${company ? ` — ${company}` : ''}">
   <title>${title} &mdash; Henry Davis</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>${CSS}  </style>
+  <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
 <body>
 
@@ -337,6 +436,10 @@ function projectPage({ title, company, year, tags, url, content }) {
     ${url ? `<p><a href="${url}">View project ↗</a></p>` : ''}
   </header>
 
+  <nav id="page-nav" class="page-nav" aria-label="On this page">
+    <span class="page-nav-title">On this page</span>
+  </nav>
+
   <hr>
 
   <main id="main">
@@ -348,6 +451,57 @@ function projectPage({ title, company, year, tags, url, content }) {
   <footer>
     <p><small>&copy; ${pageYear} Henry Davis</small></p>
   </footer>
+
+  <button class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode">Dark</button>
+  <script>
+    (function(){
+      // Theme toggle
+      var root=document.documentElement,btn=document.getElementById('theme-toggle');
+      function update(){
+        var dark=root.getAttribute('data-theme')==='dark'||
+          (!root.getAttribute('data-theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+        btn.textContent=dark?'Light':'Dark';
+        btn.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click',function(){
+        var cur=root.getAttribute('data-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+        var next=cur==='dark'?'light':'dark';
+        root.setAttribute('data-theme',next);
+        localStorage.setItem('theme',next);
+        update();
+      });
+
+      // In-page nav
+      var nav=document.getElementById('page-nav');
+      if(nav){
+        var hs=Array.prototype.slice.call(document.querySelectorAll('#main h2,#main h3'));
+        if(hs.length<2){
+          nav.style.display='none';
+        } else {
+          hs.forEach(function(h,i){
+            if(!h.id)h.id='s'+i;
+            var a=document.createElement('a');
+            a.href='#'+h.id;
+            a.textContent=h.textContent;
+            if(h.tagName==='H3')a.className='nav-h3';
+            nav.appendChild(a);
+          });
+          var links=nav.querySelectorAll('a');
+          links[0].classList.add('active');
+          hs.forEach(function(h){
+            new IntersectionObserver(function(entries){
+              if(entries[0].isIntersecting){
+                links.forEach(function(l){l.classList.remove('active');});
+                var a=nav.querySelector('a[href="#'+h.id+'"]');
+                if(a)a.classList.add('active');
+              }
+            },{rootMargin:'0px 0px -65% 0px'}).observe(h);
+          });
+        }
+      }
+    })();
+  </script>
 
 </body>
 </html>`;

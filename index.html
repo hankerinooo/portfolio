@@ -5,16 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Henry Davis is a UX designer who creates clear, accessible digital products.">
   <title>Henry Davis &mdash; UX Designer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      font-feature-settings: 'cv05', 'cv08', 'ss01';
       max-width: 65ch;
       margin: 3rem auto;
       padding: 0 1rem;
-      line-height: 1.6;
-      font-size: 1.125rem;
+      line-height: 1.65;
+      font-size: 1.0625rem;
     }
 
-    h1 { text-align: center; }
+    h1 { text-align: center; letter-spacing: -0.02em; }
+    h2, h3, h4 { letter-spacing: -0.015em; }
 
     /* Visually hidden until focused — lets keyboard users skip repeated nav */
     .skip-link {
@@ -33,16 +39,38 @@
     /* Minimum 44×44px touch target (WCAG 2.5.5 AAA) */
     a {
       display: inline-block;
-      padding-block: 0.5rem;
+      padding-block: 0.4rem;
     }
 
-    /* Dark mode — link colours verified at ≥7:1 contrast on #000 */
+    /* Dark mode — system preference or explicit toggle */
     @media (prefers-color-scheme: dark) {
-      body { background: #000; color: #fff; }
-      a { color: #6ea8fe; }
-      a:visited { color: #c58af9; }
+      html:not([data-theme="light"]) body { background: #0a0a0a; color: #f0f0f0; }
+      html:not([data-theme="light"]) a { color: #6ea8fe; }
+      html:not([data-theme="light"]) a:visited { color: #c58af9; }
     }
+    html[data-theme="dark"] body { background: #0a0a0a; color: #f0f0f0; }
+    html[data-theme="dark"] a { color: #6ea8fe; }
+    html[data-theme="dark"] a:visited { color: #c58af9; }
+
+    .theme-toggle {
+      position: fixed;
+      bottom: 1.5rem;
+      right: 1.5rem;
+      background: transparent;
+      border: 1.5px solid currentColor;
+      border-radius: 2rem;
+      padding: 0.4rem 0.9rem;
+      font: 0.8125rem/1 'Inter', system-ui, sans-serif;
+      letter-spacing: 0.01em;
+      cursor: pointer;
+      color: inherit;
+      z-index: 200;
+      opacity: 0.6;
+      transition: opacity 0.15s;
+    }
+    .theme-toggle:hover { opacity: 1; }
   </style>
+  <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
 <body>
 
@@ -85,6 +113,27 @@
   <footer>
     <p><small>&copy; 2026 Henry Davis</small></p>
   </footer>
+
+  <button class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode">Dark</button>
+  <script>
+    (function(){
+      var root=document.documentElement,btn=document.getElementById('theme-toggle');
+      function update(){
+        var dark=root.getAttribute('data-theme')==='dark'||
+          (!root.getAttribute('data-theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+        btn.textContent=dark?'Light':'Dark';
+        btn.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click',function(){
+        var cur=root.getAttribute('data-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+        var next=cur==='dark'?'light':'dark';
+        root.setAttribute('data-theme',next);
+        localStorage.setItem('theme',next);
+        update();
+      });
+    })();
+  </script>
 
 </body>
 </html>
