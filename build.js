@@ -258,7 +258,7 @@ const CSS = `
     line-height: 1.1;
     letter-spacing: -0.025em;
   }
-  h1 { font-size: clamp(3.5rem, 10vw, 6rem); margin-top: 0; margin-bottom: 0.5rem; }
+  h1 { font-size: clamp(3.5rem, 10vw, 6rem); margin-top: 0; margin-bottom: 0.5rem; text-rendering: optimizeLegibility; font-kerning: normal; letter-spacing: -0.03em; }
   h2 { font-size: 2.25rem; margin-top: 3rem; margin-bottom: 0.5rem; }
   h3 { font-size: 1.625rem; margin-top: 2.25rem; margin-bottom: 0.25rem; }
   h4 { font-size: 1.25rem; margin-top: 1.75rem; margin-bottom: 0.25rem; }
@@ -389,6 +389,38 @@ function indexPage(projects) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
   <style>${CSS}  </style>
+  <style>
+    body { border-top: 5px solid var(--ink); }
+    nav[aria-label="Selected work"]::before {
+      content: "Work";
+      display: block;
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.4;
+      margin-bottom: 1.25rem;
+    }
+    nav[aria-label="Contact"]::before {
+      content: "Contact";
+      display: block;
+      font-size: 0.625rem;
+      font-weight: 600;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      opacity: 0.4;
+      margin-bottom: 0.5rem;
+    }
+    nav[aria-label="Selected work"] a {
+      padding-left: 0.75rem;
+      border-left: 3px solid transparent;
+      transition: border-color 0.12s;
+    }
+    nav[aria-label="Selected work"] a:hover {
+      opacity: 1;
+      border-left-color: var(--ink);
+    }
+  </style>
   <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
 <body>
