@@ -7,7 +7,7 @@
   <title>Henry Davis &mdash; UX Designer</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Inter', system-ui, -apple-system, sans-serif;
@@ -18,31 +18,13 @@
       line-height: 1.65;
       font-size: 1.0625rem;
     }
-
+    h1, h2, h3, h4 { font-family: 'DM Serif Display', Georgia, serif; font-weight: 400; }
     h1 { text-align: center; letter-spacing: -0.02em; }
     h2, h3, h4 { letter-spacing: -0.015em; }
-
-    /* Visually hidden until focused — lets keyboard users skip repeated nav */
-    .skip-link {
-      position: absolute;
-      top: -4rem;
-      left: 0;
-    }
+    .skip-link { position: absolute; top: -4rem; left: 0; }
     .skip-link:focus { top: 0; }
-
-    /* Explicit focus ring for keyboard traversal (WCAG 2.4.11 / 2.4.12) */
-    :focus-visible {
-      outline: 3px solid;
-      outline-offset: 3px;
-    }
-
-    /* Minimum 44×44px touch target (WCAG 2.5.5 AAA) */
-    a {
-      display: inline-block;
-      padding-block: 0.4rem;
-    }
-
-    /* Dark mode — system preference or explicit toggle */
+    :focus-visible { outline: 3px solid; outline-offset: 3px; }
+    a { display: inline-block; padding-block: 0.4rem; }
     @media (prefers-color-scheme: dark) {
       html:not([data-theme="light"]) body { background: #0a0a0a; color: #f0f0f0; }
       html:not([data-theme="light"]) a { color: #6ea8fe; }
@@ -51,7 +33,7 @@
     html[data-theme="dark"] body { background: #0a0a0a; color: #f0f0f0; }
     html[data-theme="dark"] a { color: #6ea8fe; }
     html[data-theme="dark"] a:visited { color: #c58af9; }
-
+    html { scroll-behavior: smooth; }
     .theme-toggle {
       position: fixed;
       bottom: 1.5rem;
