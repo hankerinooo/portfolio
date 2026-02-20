@@ -282,7 +282,7 @@ const CSS = `
       display: block;
       position: fixed;
       top: 3rem;
-      left: calc(50% + 34ch + 2rem);
+      left: calc(50% + 20rem);
       width: 12rem;
       font-size: 0.8rem;
       line-height: 1.45;
