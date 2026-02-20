@@ -52,6 +52,24 @@
     }
     nav[aria-label="Selected work"] a:visited { color: var(--ink); }
     nav[aria-label="Selected work"] a:hover { opacity: 0.45; }
+    .copy-email, .dl-resume {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      font: inherit;
+      color: inherit;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4em;
+      vertical-align: middle;
+    }
+    .copy-email:hover, .dl-resume:hover { text-decoration: underline; }
+    .copy-email .icon-check { display: none; }
+    .copy-email.copied .icon-copy { display: none; }
+    .copy-email.copied .icon-check { display: inline; }
+    .header-actions { display: flex; gap: 1.5rem; flex-wrap: wrap; }
     .theme-toggle {
       position: fixed;
       bottom: 1.5rem;
@@ -59,10 +77,10 @@
       background: transparent;
       border: 1px solid var(--ink-mid);
       border-radius: 2rem;
-      padding: 0.35rem 0.85rem;
-      font: 0.6875rem/1 'Jost', system-ui, sans-serif;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
+      padding: 0.55rem 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4em;
       cursor: pointer;
       color: var(--ink);
       z-index: 200;
@@ -70,22 +88,13 @@
       transition: opacity 0.15s;
     }
     .theme-toggle:hover { opacity: 1; }
-    .copy-email {
-      background: none;
-      border: none;
-      padding: 0;
-      cursor: pointer;
-      font: inherit;
-      color: inherit;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.4em;
-      vertical-align: middle;
+    .tt-sun { display: none; }
+    @media (prefers-color-scheme: dark) {
+      html:not([data-theme="light"]) .tt-sun { display: inline; }
+      html:not([data-theme="light"]) .tt-moon { display: none; }
     }
-    .copy-email:hover { text-decoration: underline; }
-    .copy-email .icon-check { display: none; }
-    .copy-email.copied .icon-copy { display: none; }
-    .copy-email.copied .icon-check { display: inline; }
+    html[data-theme="dark"] .tt-sun { display: inline; }
+    html[data-theme="dark"] .tt-moon { display: none; }
     @media (max-width: 640px) {
       body { padding: 1.75rem 1.25rem 2.5rem; }
       hr { margin: 1.75rem 0; }
@@ -101,7 +110,8 @@
 
   <header>
     <h1>Henry Davis</h1>
-    <p class="meta">UX Designer &mdash; [City] &mdash; <button class="copy-email" aria-label="Copy email address"><svg class="icon-copy" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="icon-check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span class="copy-label">Copy email</span></button></p>
+    <p class="meta">UX Designer &mdash; [City]</p>
+    <p class="meta header-actions"><button class="copy-email" aria-label="Copy email address"><svg class="icon-copy" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="icon-check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span class="copy-label">Copy email</span></button><a class="dl-resume" href="resume.pdf" download aria-label="Download resume as PDF"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Resume</span></a></p>
   </header>
 
   <hr>
@@ -133,14 +143,13 @@
     <p><small>&copy; 2026 Henry Davis</small></p>
   </footer>
 
-  <button class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode">Dark</button>
+  <button class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode"><svg class="tt-moon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="tt-sun" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg class="tt-swap" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
   <script>
     (function(){
       var root=document.documentElement,btn=document.getElementById('theme-toggle');
       function update(){
         var dark=root.getAttribute('data-theme')==='dark'||
           (!root.getAttribute('data-theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches);
-        btn.textContent=dark?'Light':'Dark';
         btn.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');
       }
       update();
