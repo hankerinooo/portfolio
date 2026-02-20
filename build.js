@@ -249,11 +249,32 @@ const CSS = `
   .meta { opacity: 0.65; font-size: 0.9375rem; }
   .tagline { font-style: italic; }
   @media (prefers-color-scheme: dark) {
-    body { background: #0a0a0a; color: #f0f0f0; }
-    a { color: #6ea8fe; }
-    a:visited { color: #c58af9; }
-    pre { border-color: #333; }
+    html:not([data-theme="light"]) body { background: #0a0a0a; color: #f0f0f0; }
+    html:not([data-theme="light"]) a { color: #6ea8fe; }
+    html:not([data-theme="light"]) a:visited { color: #c58af9; }
+    html:not([data-theme="light"]) pre { border-color: #333; }
   }
+  html[data-theme="dark"] body { background: #0a0a0a; color: #f0f0f0; }
+  html[data-theme="dark"] a { color: #6ea8fe; }
+  html[data-theme="dark"] a:visited { color: #c58af9; }
+  html[data-theme="dark"] pre { border-color: #333; }
+  .theme-toggle {
+    position: fixed;
+    bottom: 1.5rem;
+    right: 1.5rem;
+    background: transparent;
+    border: 1.5px solid currentColor;
+    border-radius: 2rem;
+    padding: 0.4rem 0.9rem;
+    font: 0.8125rem/1 'Inter', system-ui, sans-serif;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    color: inherit;
+    z-index: 200;
+    opacity: 0.6;
+    transition: opacity 0.15s;
+  }
+  .theme-toggle:hover { opacity: 1; }
 `;
 
 // ---------------------------------------------------------------------------
@@ -280,6 +301,7 @@ function indexPage(projects) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>${CSS}  </style>
+  <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
 <body>
 
@@ -321,6 +343,27 @@ ${items}
     <p><small>&copy; ${year} Henry Davis</small></p>
   </footer>
 
+  <button class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode">Dark</button>
+  <script>
+    (function(){
+      var root=document.documentElement,btn=document.getElementById('theme-toggle');
+      function update(){
+        var dark=root.getAttribute('data-theme')==='dark'||
+          (!root.getAttribute('data-theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+        btn.textContent=dark?'Light':'Dark';
+        btn.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click',function(){
+        var cur=root.getAttribute('data-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+        var next=cur==='dark'?'light':'dark';
+        root.setAttribute('data-theme',next);
+        localStorage.setItem('theme',next);
+        update();
+      });
+    })();
+  </script>
+
 </body>
 </html>`;
 }
@@ -340,6 +383,7 @@ function projectPage({ title, company, year, tags, url, content }) {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
   <style>${CSS}  </style>
+  <script>(function(){var t=localStorage.getItem('theme');if(t)document.documentElement.setAttribute('data-theme',t);})();</script>
 </head>
 <body>
 
@@ -363,6 +407,27 @@ function projectPage({ title, company, year, tags, url, content }) {
   <footer>
     <p><small>&copy; ${pageYear} Henry Davis</small></p>
   </footer>
+
+  <button class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode">Dark</button>
+  <script>
+    (function(){
+      var root=document.documentElement,btn=document.getElementById('theme-toggle');
+      function update(){
+        var dark=root.getAttribute('data-theme')==='dark'||
+          (!root.getAttribute('data-theme')&&window.matchMedia('(prefers-color-scheme: dark)').matches);
+        btn.textContent=dark?'Light':'Dark';
+        btn.setAttribute('aria-label',dark?'Switch to light mode':'Switch to dark mode');
+      }
+      update();
+      btn.addEventListener('click',function(){
+        var cur=root.getAttribute('data-theme')||(window.matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light');
+        var next=cur==='dark'?'light':'dark';
+        root.setAttribute('data-theme',next);
+        localStorage.setItem('theme',next);
+        update();
+      });
+    })();
+  </script>
 
 </body>
 </html>`;
