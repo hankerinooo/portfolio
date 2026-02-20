@@ -324,6 +324,22 @@ const CSS = `
     transition: opacity 0.15s;
   }
   .theme-toggle:hover { opacity: 1; }
+  .copy-email {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font: inherit;
+    color: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    vertical-align: middle;
+  }
+  .copy-email:hover { text-decoration: underline; }
+  .copy-email .icon-check { display: none; }
+  .copy-email.copied .icon-copy { display: none; }
+  .copy-email.copied .icon-check { display: inline; }
   @media (max-width: 640px) {
     body { padding: 1.75rem 1.25rem 2.5rem; }
     hr { margin: 1.75rem 0; }
@@ -403,16 +419,12 @@ function indexPage(projects) {
 
   <header>
     <h1>Henry Davis</h1>
-    <p class="meta">UX Designer &mdash; <a href="mailto:henry@example.com">henry@example.com</a></p>
+    <p class="meta">UX Designer &mdash; <button class="copy-email" aria-label="Copy email address"><svg class="icon-copy" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="icon-check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span class="copy-label">Copy email</span></button></p>
   </header>
 
   <hr>
 
   <main id="main">
-
-    <p><em>I design digital products that are clear, accessible, and built for real people.</em></p>
-
-    <hr>
 
     <nav aria-label="Selected work">
       <p>
@@ -454,6 +466,20 @@ ${items}
         root.setAttribute('data-theme',next);
         localStorage.setItem('theme',next);
         update();
+      });
+    })();
+    (function(){
+      var eb=document.querySelector('.copy-email');
+      if(!eb)return;
+      eb.addEventListener('click',function(){
+        navigator.clipboard.writeText('davish52@gmail.com').then(function(){
+          eb.classList.add('copied');
+          eb.querySelector('.copy-label').textContent='Copied';
+          setTimeout(function(){
+            eb.classList.remove('copied');
+            eb.querySelector('.copy-label').textContent='Copy email';
+          },2000);
+        });
       });
     })();
   </script>
