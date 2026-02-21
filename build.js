@@ -310,6 +310,17 @@ const CSS = `
   .project-list li { padding-block: 0.875rem; }
   .project-tagline { margin: 0.2rem 0 0; opacity: 0.65; }
   .project-tags { margin: 0.2rem 0 0; font-size: 0.8125rem; opacity: 0.5; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; }
+  .section-tag {
+    font-family: 'Jost', system-ui, sans-serif;
+    font-size: 0.875rem;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    opacity: 0.5;
+    margin-top: 2.5rem;
+    margin-bottom: 0;
+  }
+  .tag-section:first-child .section-tag { margin-top: 0; }
   .intro { font-style: italic; opacity: 0.8; margin: 0.5rem 0 2rem; }
   .copy-email, .dl-resume {
     background: none;
@@ -406,23 +417,68 @@ const CSS = `
 // ---------------------------------------------------------------------------
 
 function indexPage(projects) {
-  const year  = new Date().getFullYear();
-  const items = projects.length
-    ? `<ul class="project-list">\n` + projects.map(p => {
-        const label      = p.company ? `${p.title} &mdash; ${p.company}` : p.title;
-        const taglineHtml = p.tagline ? `\n        <p class="project-tagline">${p.tagline}</p>` : '';
-        const tagsHtml    = p.tags    ? `\n        <p class="project-tags">${p.tags}</p>` : '';
-        return `      <li>\n        <a href="projects/${p.slug}.html">${label}</a>${taglineHtml}${tagsHtml}\n      </li>`;
-      }).join('\n') + `\n    </ul>`
-    : '<p>No projects published yet.</p>';
+  const year = new Date().getFullYear();
+
+  // Group projects by tag, preserving first-seen order
+  const tagOrder = [];
+  const tagMap   = new Map();
+  const untagged = [];
+
+  for (const p of projects) {
+    const arr = p.tagsArray || [];
+    if (arr.length === 0) {
+      untagged.push(p);
+    } else {
+      for (const tag of arr) {
+        if (!tagMap.has(tag)) {
+          tagOrder.push(tag);
+          tagMap.set(tag, []);
+        }
+        tagMap.get(tag).push(p);
+      }
+    }
+  }
+
+  function renderItem(p) {
+    const label       = p.company ? `${p.title} &mdash; ${p.company}` : p.title;
+    const taglineHtml = p.tagline ? `\n          <p class="project-tagline">${p.tagline}</p>` : '';
+    return `        <li>\n          <a href="projects/${p.slug}.html">${label}</a>${taglineHtml}\n        </li>`;
+  }
+
+  let workHtml;
+  if (projects.length === 0) {
+    workHtml = '<p>No projects published yet.</p>';
+  } else if (tagOrder.length === 0) {
+    // No tags — flat list
+    workHtml = `<ul class="project-list">\n${projects.map(renderItem).join('\n')}\n      </ul>`;
+  } else {
+    const sections = tagOrder.map(tag => {
+      const ps = tagMap.get(tag);
+      return `<section class="tag-section">
+        <h2 class="section-tag">${tag}</h2>
+        <ul class="project-list">
+${ps.map(renderItem).join('\n')}
+        </ul>
+      </section>`;
+    });
+    if (untagged.length > 0) {
+      sections.push(`<section class="tag-section">
+        <h2 class="section-tag">Other</h2>
+        <ul class="project-list">
+${untagged.map(renderItem).join('\n')}
+        </ul>
+      </section>`);
+    }
+    workHtml = sections.join('\n      ');
+  }
 
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Henry Davis is a UX designer who creates clear, accessible digital products.">
-  <title>Henry Davis &mdash; UX Designer</title>
+  <meta name="description" content="Henry Davis — Design portfolio">
+  <title>Henry Davis &mdash; Design portfolio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;1,9..144,400&family=Jost:wght@300;400;500&display=swap" rel="stylesheet">
@@ -435,9 +491,8 @@ function indexPage(projects) {
 
   <header>
     <h1>Henry Davis</h1>
-    <p class="meta">UX Designer</p>
-    <p class="intro">I create clear, accessible digital products.</p>
-    <p class="meta header-actions"><button class="copy-email" aria-label="Copy email address"><svg class="icon-copy" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="icon-check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span class="copy-label">Copy email</span></button><a class="dl-resume" href="resume.pdf" download aria-label="Download resume as PDF"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Resume</span></a></p>
+    <p class="meta">Design portfolio</p>
+    <p class="meta header-actions"><button class="copy-email" aria-label="Copy email address"><svg class="icon-copy" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="icon-check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span class="copy-label">COPY EMAIL</span></button><a class="dl-resume" href="resume.pdf" download aria-label="Download resume as PDF"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>RESUME</span></a></p>
   </header>
 
   <hr>
@@ -445,9 +500,8 @@ function indexPage(projects) {
   <main id="main">
 
     <nav aria-label="Selected work">
-      ${items}
+      ${workHtml}
     </nav>
-
 
   </main>
 
@@ -481,10 +535,10 @@ function indexPage(projects) {
       eb.addEventListener('click',function(){
         navigator.clipboard.writeText('davish52@gmail.com').then(function(){
           eb.classList.add('copied');
-          eb.querySelector('.copy-label').textContent='Copied';
+          eb.querySelector('.copy-label').textContent='COPIED';
           setTimeout(function(){
             eb.classList.remove('copied');
-            eb.querySelector('.copy-label').textContent='Copy email';
+            eb.querySelector('.copy-label').textContent='COPY EMAIL';
           },2000);
         });
       });
@@ -610,12 +664,13 @@ async function main() {
     const title = prop(page, 'Name');
     if (!title) continue;
 
-    const company = prop(page, 'Company');
-    const year    = prop(page, 'Year');
-    const tags    = prop(page, 'Tags');
-    const tagline = prop(page, 'Tagline');
-    const url     = prop(page, 'URL');
-    const s       = slug(title);
+    const company   = prop(page, 'Company');
+    const year      = prop(page, 'Year');
+    const tagsArray = (page.properties['Tags']?.multi_select ?? []).map(s => s.name);
+    const tags      = tagsArray.join(', ');
+    const tagline   = prop(page, 'Tagline');
+    const url       = prop(page, 'URL');
+    const s         = slug(title);
 
     console.log(`  Building: ${title}`);
 
@@ -624,7 +679,7 @@ async function main() {
     const html    = projectPage({ title, company, year, tags, url, content });
 
     fs.writeFileSync(path.join(OUT, 'projects', `${s}.html`), html);
-    projects.push({ title, company, tagline, tags, slug: s });
+    projects.push({ title, company, tagline, tags, tagsArray, slug: s });
   }
 
   fs.writeFileSync(path.join(OUT, 'index.html'), indexPage(projects));
