@@ -324,8 +324,6 @@ const CSS = `
   .intro { font-style: italic; opacity: 0.8; margin: 0.5rem 0 2rem; }
   .copy-email, .dl-resume {
     background: none;
-    border: none;
-    padding: 0;
     cursor: pointer;
     font: inherit;
     color: inherit;
@@ -335,11 +333,16 @@ const CSS = `
     gap: 0.4em;
     vertical-align: middle;
   }
+  .dl-resume { border: none; padding: 0; }
+  .copy-email { border: 1px solid var(--ink-mid); border-radius: 2em; padding: 0.2em 0.65em; }
   .copy-email:hover, .dl-resume:hover { text-decoration: underline; }
   .copy-email .icon-check { display: none; }
   .copy-email.copied .icon-copy { display: none; }
   .copy-email.copied .icon-check { display: inline; }
-  .header-actions { display: flex; gap: 1.5rem; flex-wrap: wrap; }
+  .copy-email span, .dl-resume span { text-transform: none; letter-spacing: normal; }
+  .header-meta-row { display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap; }
+  .header-meta-row .meta { margin: 0; }
+  .header-actions { display: flex; gap: 1rem; align-items: center; flex-wrap: wrap; }
   .theme-toggle {
     position: fixed;
     bottom: 1.5rem;
@@ -491,8 +494,10 @@ ${untagged.map(renderItem).join('\n')}
 
   <header>
     <h1>Henry Davis</h1>
-    <p class="meta">Design portfolio</p>
-    <p class="meta header-actions"><button class="copy-email" aria-label="Copy email address"><svg class="icon-copy" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="icon-check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span class="copy-label">COPY EMAIL</span></button><a class="dl-resume" href="resume.pdf" download aria-label="Download resume as PDF"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>RESUME</span></a></p>
+    <div class="header-meta-row">
+      <p class="meta">Design portfolio</p>
+      <p class="meta header-actions"><button class="copy-email" aria-label="Copy email address"><svg class="icon-copy" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="icon-check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span class="copy-label">Copy email</span></button><a class="dl-resume" href="resume.pdf" download aria-label="Download resume as PDF"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Resume</span></a></p>
+    </div>
   </header>
 
   <hr>
@@ -535,10 +540,10 @@ ${untagged.map(renderItem).join('\n')}
       eb.addEventListener('click',function(){
         navigator.clipboard.writeText('davish52@gmail.com').then(function(){
           eb.classList.add('copied');
-          eb.querySelector('.copy-label').textContent='COPIED';
+          eb.querySelector('.copy-label').textContent='Copied';
           setTimeout(function(){
             eb.classList.remove('copied');
-            eb.querySelector('.copy-label').textContent='COPY EMAIL';
+            eb.querySelector('.copy-label').textContent='Copy email';
           },2000);
         });
       });
