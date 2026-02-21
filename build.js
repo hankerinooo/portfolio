@@ -267,14 +267,15 @@ const CSS = `
   :focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
   a { color: var(--ink); }
   a:visited { color: var(--ink); }
-  hr { border: none; margin: 3rem 0; }
+  hr { border: none; border-top: 1px solid var(--ink-faint); margin: 3rem 0; }
   header + hr { margin-top: 2rem; }
   main + hr { margin-bottom: 1.5rem; }
   header > p:first-child { margin-top: 0; margin-bottom: 2.5rem; font-size: 0.875rem; }
   footer p { margin: 0; }
   blockquote {
     margin-inline: 0;
-    padding-inline-start: 2rem;
+    padding-inline-start: 1.5rem;
+    border-left: 2px solid var(--ink-faint);
     font-style: italic;
     opacity: 0.75;
   }
@@ -301,11 +302,15 @@ const CSS = `
     text-decoration: none;
     color: var(--ink);
     display: block;
-    padding-block: 1rem;
     transition: opacity 0.15s;
   }
   nav[aria-label="Selected work"] a:visited { color: var(--ink); }
-  nav[aria-label="Selected work"] a:hover { opacity: 0.45; }
+  nav[aria-label="Selected work"] a:hover { opacity: 0.6; }
+  .project-list { list-style: none; margin: 0; padding: 0; }
+  .project-list li { padding-block: 0.875rem; }
+  .project-tagline { margin: 0.2rem 0 0; opacity: 0.65; }
+  .project-tags { margin: 0.2rem 0 0; font-size: 0.8125rem; opacity: 0.5; letter-spacing: 0.05em; text-transform: uppercase; font-weight: 500; }
+  .intro { font-style: italic; opacity: 0.8; margin: 0.5rem 0 2rem; }
   .copy-email, .dl-resume {
     background: none;
     border: none;
@@ -353,7 +358,7 @@ const CSS = `
     body { padding: 1.75rem 1.25rem 2.5rem; }
     hr { margin: 1.75rem 0; }
     header + hr { margin-top: 1.25rem; }
-    nav[aria-label="Selected work"] a { padding-block: 0.55rem; }
+    .project-list li { padding-block: 0.5rem; }
   }
   .page-nav { display: none; }
   @media (min-width: 1200px) {
@@ -403,11 +408,13 @@ const CSS = `
 function indexPage(projects) {
   const year  = new Date().getFullYear();
   const items = projects.length
-    ? projects.map(p => {
-        const label = p.company ? `${p.title} &mdash; ${p.company}` : p.title;
-        return `        <a href="projects/${p.slug}.html">${label}</a><br>`;
-      }).join('\n')
-    : '        <p>No projects published yet.</p>';
+    ? `<ul class="project-list">\n` + projects.map(p => {
+        const label      = p.company ? `${p.title} &mdash; ${p.company}` : p.title;
+        const taglineHtml = p.tagline ? `\n        <p class="project-tagline">${p.tagline}</p>` : '';
+        const tagsHtml    = p.tags    ? `\n        <p class="project-tags">${p.tags}</p>` : '';
+        return `      <li>\n        <a href="projects/${p.slug}.html">${label}</a>${taglineHtml}${tagsHtml}\n      </li>`;
+      }).join('\n') + `\n    </ul>`
+    : '<p>No projects published yet.</p>';
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -429,6 +436,7 @@ function indexPage(projects) {
   <header>
     <h1>Henry Davis</h1>
     <p class="meta">UX Designer</p>
+    <p class="intro">I create clear, accessible digital products.</p>
     <p class="meta header-actions"><button class="copy-email" aria-label="Copy email address"><svg class="icon-copy" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg><svg class="icon-check" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"/></svg><span class="copy-label">Copy email</span></button><a class="dl-resume" href="resume.pdf" download aria-label="Download resume as PDF"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg><span>Resume</span></a></p>
   </header>
 
@@ -437,19 +445,9 @@ function indexPage(projects) {
   <main id="main">
 
     <nav aria-label="Selected work">
-      <p>
-${items}
-      </p>
+      ${items}
     </nav>
 
-    <hr>
-
-    <nav aria-label="Contact">
-      <p>
-        <a href="https://linkedin.com/in/henrydavis">linkedin.com/in/henrydavis</a><br>
-        <a href="#">Resume (PDF)</a>
-      </p>
-    </nav>
 
   </main>
 
@@ -615,6 +613,7 @@ async function main() {
     const company = prop(page, 'Company');
     const year    = prop(page, 'Year');
     const tags    = prop(page, 'Tags');
+    const tagline = prop(page, 'Tagline');
     const url     = prop(page, 'URL');
     const s       = slug(title);
 
@@ -625,7 +624,7 @@ async function main() {
     const html    = projectPage({ title, company, year, tags, url, content });
 
     fs.writeFileSync(path.join(OUT, 'projects', `${s}.html`), html);
-    projects.push({ title, company, slug: s });
+    projects.push({ title, company, tagline, tags, slug: s });
   }
 
   fs.writeFileSync(path.join(OUT, 'index.html'), indexPage(projects));
