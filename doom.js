@@ -1,6 +1,8 @@
 (function () {
   'use strict';
 
+  console.log('[DOOM] IIFE running — doom.js loaded OK');
+
   // Inject hover style for the trigger link (can't do :hover inline)
   var style = document.createElement('style');
   style.textContent = '#doom-trigger:hover { text-decoration: underline; }';
@@ -115,6 +117,7 @@
     cellW = fontSize * 0.6; // monospace char width ≈ 0.6 × font size
     cellH = fontSize;
     gridRows = Math.floor(h / cellH);
+    console.log('[DOOM] recalcGrid — canvas:', w, 'x', h, '| fontSize:', fontSize, '| cellW:', cellW, '| cellH:', cellH, '| gridRows:', gridRows, '| GRID_COLS:', GRID_COLS);
   }
 
   // -------------------------------------------------------------------------
@@ -173,7 +176,17 @@
   // Rendering
   // -------------------------------------------------------------------------
 
+  var _renderCallCount = 0;
   function render() {
+    _renderCallCount++;
+    if (_renderCallCount === 1) {
+      console.log('[DOOM] render() called for first time');
+      console.log('[DOOM] render — canvas.width:', canvas.width, '| canvas.height:', canvas.height);
+      console.log('[DOOM] render — ctx:', ctx);
+      console.log('[DOOM] render — GRID_COLS:', GRID_COLS, '| gridRows:', gridRows, '| cellW:', cellW, '| cellH:', cellH, '| fontSize:', fontSize);
+      console.log('[DOOM] render — player:', JSON.stringify(player));
+    }
+
     // Clear
     ctx.fillStyle = '#1a1a14';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -187,6 +200,9 @@
       // Ray angle for this column
       var rayAngle = player.angle - FOV / 2 + (col / GRID_COLS) * FOV;
       var dist = castRay(player.x, player.y, rayAngle);
+      if (_renderCallCount === 1 && col === 0) {
+        console.log('[DOOM] render col=0 — rayAngle:', rayAngle.toFixed(4), '| dist:', dist.toFixed(4));
+      }
 
       // Fix fisheye
       var corrected = dist * Math.cos(rayAngle - player.angle);
@@ -248,7 +264,10 @@
   var lastTime = 0;
   var frameDuration = 1000 / 30; // target 30fps
 
+  var _loopCallCount = 0;
   function gameLoop(timestamp) {
+    _loopCallCount++;
+    if (_loopCallCount === 1) console.log('[DOOM] gameLoop() first tick — timestamp:', timestamp);
     animFrameId = requestAnimationFrame(gameLoop);
 
     var delta = timestamp - lastTime;
@@ -296,6 +315,7 @@
   // Start / Exit
   // -------------------------------------------------------------------------
   function startGame() {
+    console.log('[DOOM] startGame() called');
     state = 'playing';
     title.style.display = 'none';
     hud.style.display = 'block';
@@ -337,6 +357,7 @@
 
   // Entry point
   window.initDoomMode = function () {
+    console.log('[DOOM] initDoomMode() called — state was:', state);
     overlay.style.display = 'block';
     state = 'title';
     title.style.display = 'block';
