@@ -153,7 +153,7 @@
   }
 
   function requestPointerLock() {
-    canvas.requestPointerLock();
+    try { canvas.requestPointerLock(); } catch (e) {}
   }
 
   // -------------------------------------------------------------------------
@@ -183,6 +183,7 @@
   // -------------------------------------------------------------------------
 
   function render() {
+    if (!ctx) return;
     // Clear
     ctx.fillStyle = '#1a1a14';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -259,6 +260,10 @@
   function gameLoop(timestamp) {
     animFrameId = requestAnimationFrame(gameLoop);
 
+    // Sync lastTime on first tick using the rAF-provided DOMHighResTimeStamp
+    // (avoids any dependency on performance.now() or Date.now())
+    if (!lastTime) { lastTime = timestamp; return; }
+
     var delta = timestamp - lastTime;
     if (delta < frameDuration) return;
     lastTime = timestamp - (delta % frameDuration);
@@ -319,9 +324,9 @@
     document.addEventListener('keyup', onKeyUp);
     document.addEventListener('mousemove', onMouseMove);
     canvas.addEventListener('click', requestPointerLock);
-    canvas.requestPointerLock();
+    requestPointerLock();
 
-    lastTime = performance.now();
+    lastTime = 0; // gameLoop self-syncs on first tick from rAF timestamp
     animFrameId = requestAnimationFrame(gameLoop);
   }
 
@@ -338,9 +343,9 @@
     document.removeEventListener('keyup', onKeyUp);
     document.removeEventListener('mousemove', onMouseMove);
     canvas.removeEventListener('click', requestPointerLock);
-    if (document.pointerLockElement === canvas) {
-      document.exitPointerLock();
-    }
+    try {
+      if (document.pointerLockElement === canvas) document.exitPointerLock();
+    } catch (e) {}
   }
 
   // Entry point
