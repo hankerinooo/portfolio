@@ -1,7 +1,14 @@
 (function () {
   'use strict';
 
-  console.log('[DOOM] IIFE running — doom.js loaded OK');
+  // Self-contained xorshift32 PRNG — never touches Math.random (SES-safe)
+  var _rng = 0xDEADBEEF;
+  function rand() {
+    _rng ^= _rng << 13;
+    _rng ^= _rng >> 17;
+    _rng ^= _rng << 5;
+    return (_rng >>> 0) / 4294967296;
+  }
 
   // Inject hover style for the trigger link (can't do :hover inline)
   var style = document.createElement('style');
@@ -117,7 +124,6 @@
     cellW = fontSize * 0.6; // monospace char width ≈ 0.6 × font size
     cellH = fontSize;
     gridRows = Math.floor(h / cellH);
-    console.log('[DOOM] recalcGrid — canvas:', w, 'x', h, '| fontSize:', fontSize, '| cellW:', cellW, '| cellH:', cellH, '| gridRows:', gridRows, '| GRID_COLS:', GRID_COLS);
   }
 
   // -------------------------------------------------------------------------
@@ -176,17 +182,7 @@
   // Rendering
   // -------------------------------------------------------------------------
 
-  var _renderCallCount = 0;
   function render() {
-    _renderCallCount++;
-    if (_renderCallCount === 1) {
-      console.log('[DOOM] render() called for first time');
-      console.log('[DOOM] render — canvas.width:', canvas.width, '| canvas.height:', canvas.height);
-      console.log('[DOOM] render — ctx:', ctx);
-      console.log('[DOOM] render — GRID_COLS:', GRID_COLS, '| gridRows:', gridRows, '| cellW:', cellW, '| cellH:', cellH, '| fontSize:', fontSize);
-      console.log('[DOOM] render — player:', JSON.stringify(player));
-    }
-
     // Clear
     ctx.fillStyle = '#1a1a14';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -200,10 +196,6 @@
       // Ray angle for this column
       var rayAngle = player.angle - FOV / 2 + (col / GRID_COLS) * FOV;
       var dist = castRay(player.x, player.y, rayAngle);
-      if (_renderCallCount === 1 && col === 0) {
-        console.log('[DOOM] render col=0 — rayAngle:', rayAngle.toFixed(4), '| dist:', dist.toFixed(4));
-      }
-
       // Fix fisheye
       var corrected = dist * Math.cos(rayAngle - player.angle);
 
@@ -228,7 +220,7 @@
       for (var row = 0; row < wallTop; row++) {
         // Sparse periods for ceiling — only render occasionally
         var ceilDist = (halfRows - row) / halfRows;
-        if (ceilDist < 0.3 && Math.random() < 0.02) {
+        if (ceilDist < 0.3 && rand() < 0.02) {
           ctx.fillStyle = 'rgba(240,234,214,0.08)';
           ctx.fillText('.', x, row * cellH);
         }
@@ -248,7 +240,7 @@
         if (floorDist > 0.1) {
           // Dot density increases closer to viewer (larger row values)
           var dotChance = floorDist * 0.4;
-          if (Math.random() < dotChance) {
+          if (rand() < dotChance) {
             var floorOpacity = 0.2 * floorDist;
             ctx.fillStyle = 'rgba(240,234,214,' + floorOpacity.toFixed(2) + ')';
             ctx.fillText('\u00B7', x, row * cellH);
@@ -264,10 +256,7 @@
   var lastTime = 0;
   var frameDuration = 1000 / 30; // target 30fps
 
-  var _loopCallCount = 0;
   function gameLoop(timestamp) {
-    _loopCallCount++;
-    if (_loopCallCount === 1) console.log('[DOOM] gameLoop() first tick — timestamp:', timestamp);
     animFrameId = requestAnimationFrame(gameLoop);
 
     var delta = timestamp - lastTime;
@@ -315,7 +304,6 @@
   // Start / Exit
   // -------------------------------------------------------------------------
   function startGame() {
-    console.log('[DOOM] startGame() called');
     state = 'playing';
     title.style.display = 'none';
     hud.style.display = 'block';
@@ -357,7 +345,6 @@
 
   // Entry point
   window.initDoomMode = function () {
-    console.log('[DOOM] initDoomMode() called — state was:', state);
     overlay.style.display = 'block';
     state = 'title';
     title.style.display = 'block';
