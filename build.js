@@ -514,6 +514,7 @@ ${untagged.map(renderItem).join('\n')}
 
   <footer>
     <p><small>&copy; ${year} Henry Davis</small></p>
+    <p><small><a href="#" id="doom-trigger" style="opacity:0.15;font-family:'Jost',system-ui,sans-serif;color:inherit;text-decoration:none;" onclick="event.preventDefault();window.initDoomMode();">Answer the call to defeat Dark Patterns?</a></small></p>
   </footer>
 
   <button class="theme-toggle" id="theme-toggle" aria-label="Switch to dark mode"><svg class="tt-moon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg><svg class="tt-sun" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg><svg class="tt-swap" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 3L4 7l4 4"/><path d="M4 7h16"/><path d="M16 21l4-4-4-4"/><path d="M20 17H4"/></svg></button>
@@ -549,6 +550,7 @@ ${untagged.map(renderItem).join('\n')}
       });
     })();
   </script>
+  <script src="doom.js"></script>
 
 </body>
 </html>`;
@@ -658,6 +660,7 @@ function projectPage({ title, company, year, tags, url, content }) {
 
 async function main() {
   fs.mkdirSync(path.join(OUT, 'projects'), { recursive: true });
+  fs.copyFileSync(path.join(__dirname, 'doom.js'), path.join(OUT, 'doom.js'));
 
   console.log('Fetching projects from Notion…');
   const pages = await queryDatabase();
