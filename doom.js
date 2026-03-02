@@ -24,13 +24,12 @@
   overlay.id = 'doom-overlay';
   overlay.style.cssText = 'position:fixed;top:0;left:0;width:100vw;height:100vh;background:#1a1a14;z-index:9999;display:none;overflow:hidden;';
 
-  // Canvas
-  var canvas = document.createElement('canvas');
-  canvas.id = 'doom-canvas';
-  canvas.style.cssText = 'width:100%;height:100%;display:block;cursor:none;';
-  overlay.appendChild(canvas);
-
-  var ctx = canvas.getContext('2d');
+  // DOM grid — replaces <canvas>; ad-blocker-safe
+  var gridContainer = document.createElement('div');
+  gridContainer.id = 'doom-grid';
+  // color and font-family are inherited by all child spans
+  gridContainer.style.cssText = 'position:absolute;top:0;left:0;width:100%;height:100%;overflow:hidden;cursor:none;color:var(--ink);font-family:"Courier New",Courier,monospace;';
+  overlay.appendChild(gridContainer);
 
   // HUD
   var hud = document.createElement('div');
@@ -117,13 +116,51 @@
   var cellH = 1;
   var fontSize = 14;
 
+  // cells[row][col] = <span> — populated by buildGrid()
+  var cells = [];
+
+  // Build (or rebuild) the full span grid to match current dimensions.
+  // Uses a DocumentFragment for a single batched DOM insertion.
+  function buildGrid(rows) {
+    gridContainer.innerHTML = '';
+    cells = [];
+    var frag = document.createDocumentFragment();
+    var spanStyle = [
+      'display:inline-block',
+      'width:' + cellW + 'px',
+      'height:' + cellH + 'px',
+      'font-size:' + fontSize + 'px',
+      'line-height:1',
+      'text-align:center',
+      'overflow:hidden'
+    ].join(';') + ';';
+    var rowStyle = 'height:' + cellH + 'px;overflow:hidden;white-space:nowrap;';
+
+    for (var r = 0; r < rows; r++) {
+      var rowDiv = document.createElement('div');
+      rowDiv.style.cssText = rowStyle;
+      var rowCells = [];
+      for (var c = 0; c < GRID_COLS; c++) {
+        var span = document.createElement('span');
+        span.textContent = ' ';
+        span.style.cssText = spanStyle;
+        rowDiv.appendChild(span);
+        rowCells.push(span);
+      }
+      cells.push(rowCells);
+      frag.appendChild(rowDiv);
+    }
+    gridContainer.appendChild(frag);
+  }
+
   function recalcGrid() {
-    var w = canvas.width;
-    var h = canvas.height;
+    var w = window.innerWidth;
+    var h = window.innerHeight;
     fontSize = Math.max(8, Math.floor(w / GRID_COLS));
     cellW = fontSize * 0.6; // monospace char width ≈ 0.6 × font size
     cellH = fontSize;
     gridRows = Math.floor(h / cellH);
+    buildGrid(gridRows);
   }
 
   // -------------------------------------------------------------------------
@@ -153,7 +190,7 @@
   }
 
   function requestPointerLock() {
-    try { canvas.requestPointerLock(); } catch (e) {}
+    try { overlay.requestPointerLock(); } catch (e) {}
   }
 
   // -------------------------------------------------------------------------
@@ -179,17 +216,11 @@
   }
 
   // -------------------------------------------------------------------------
-  // Rendering
+  // Rendering — DOM span grid, no canvas required
   // -------------------------------------------------------------------------
 
   function render() {
-    if (!ctx) return;
-    // Clear
-    ctx.fillStyle = '#1a1a14';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.font = fontSize + 'px "Courier New", Courier, monospace';
-    ctx.textBaseline = 'top';
+    if (!cells.length) return;
 
     var halfRows = gridRows / 2;
 
@@ -213,38 +244,39 @@
       var wallChar = WALL_CHARS[charIdx];
 
       // Wall opacity: 1.0 at close, 0.3 at far
-      var wallOpacity = 1.0 - t * 0.7;
+      var wallOpacity = (1.0 - t * 0.7).toFixed(2);
 
-      var x = col * cellW;
+      for (var row = 0; row < gridRows; row++) {
+        var span = cells[row][col];
 
-      // Ceiling
-      for (var row = 0; row < wallTop; row++) {
-        // Sparse periods for ceiling — only render occasionally
-        var ceilDist = (halfRows - row) / halfRows;
-        if (ceilDist < 0.3 && rand() < 0.02) {
-          ctx.fillStyle = 'rgba(240,234,214,0.08)';
-          ctx.fillText('.', x, row * cellH);
-        }
-      }
-
-      // Wall
-      if (wallChar !== ' ') {
-        ctx.fillStyle = 'rgba(240,234,214,' + wallOpacity.toFixed(2) + ')';
-        for (var row = Math.max(0, wallTop); row < Math.min(gridRows, wallBottom); row++) {
-          ctx.fillText(wallChar, x, row * cellH);
-        }
-      }
-
-      // Floor
-      for (var row = wallBottom; row < gridRows; row++) {
-        var floorDist = (row - halfRows) / halfRows;
-        if (floorDist > 0.1) {
-          // Dot density increases closer to viewer (larger row values)
-          var dotChance = floorDist * 0.4;
-          if (rand() < dotChance) {
-            var floorOpacity = 0.2 * floorDist;
-            ctx.fillStyle = 'rgba(240,234,214,' + floorOpacity.toFixed(2) + ')';
-            ctx.fillText('\u00B7', x, row * cellH);
+        if (row < wallTop) {
+          // Ceiling — sparse dots near the top
+          var ceilDist = (halfRows - row) / halfRows;
+          if (ceilDist < 0.3 && rand() < 0.02) {
+            span.textContent = '.';
+            span.style.opacity = '0.08';
+          } else {
+            span.textContent = ' ';
+            span.style.opacity = '1';
+          }
+        } else if (row >= Math.max(0, wallTop) && row < Math.min(gridRows, wallBottom)) {
+          // Wall
+          if (wallChar !== ' ') {
+            span.textContent = wallChar;
+            span.style.opacity = wallOpacity;
+          } else {
+            span.textContent = ' ';
+            span.style.opacity = '1';
+          }
+        } else {
+          // Floor — dot density increases closer to the viewer
+          var floorDist = (row - halfRows) / halfRows;
+          if (floorDist > 0.1 && rand() < floorDist * 0.4) {
+            span.textContent = '\u00B7';
+            span.style.opacity = (0.2 * floorDist).toFixed(2);
+          } else {
+            span.textContent = ' ';
+            span.style.opacity = '1';
           }
         }
       }
@@ -297,11 +329,9 @@
   }
 
   // -------------------------------------------------------------------------
-  // Canvas sizing
+  // Grid resize
   // -------------------------------------------------------------------------
-  function resizeCanvas() {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+  function resizeGrid() {
     recalcGrid();
   }
 
@@ -319,11 +349,11 @@
     player.angle = 0;
     keys = {};
 
-    resizeCanvas();
-    window.addEventListener('resize', resizeCanvas);
+    recalcGrid();
+    window.addEventListener('resize', resizeGrid);
     document.addEventListener('keyup', onKeyUp);
     document.addEventListener('mousemove', onMouseMove);
-    canvas.addEventListener('click', requestPointerLock);
+    overlay.addEventListener('click', requestPointerLock);
     requestPointerLock();
 
     lastTime = 0; // gameLoop self-syncs on first tick from rAF timestamp
@@ -338,13 +368,13 @@
     overlay.style.display = 'none';
     state = 'idle';
     keys = {};
-    window.removeEventListener('resize', resizeCanvas);
+    window.removeEventListener('resize', resizeGrid);
     document.removeEventListener('keydown', onKeyDown);
     document.removeEventListener('keyup', onKeyUp);
     document.removeEventListener('mousemove', onMouseMove);
-    canvas.removeEventListener('click', requestPointerLock);
+    overlay.removeEventListener('click', requestPointerLock);
     try {
-      if (document.pointerLockElement === canvas) document.exitPointerLock();
+      if (document.pointerLockElement === overlay) document.exitPointerLock();
     } catch (e) {}
   }
 
